@@ -6,7 +6,7 @@ export interface IProduct {
   id: string;
   name: string;
   subTitle?: string;
-  description: string;  
+  description: string;
   slug: string;
   category?: string;
   price: number;
@@ -23,13 +23,8 @@ export interface IProduct {
 async function fetchSheetData(): Promise<IProduct[]> {
   try {
     const response = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/1wrV0Q50a1SNOqYVEG69AAmEgSYTDyk57aLkTZHlr5IM/values/Products!A1:P?key=AIzaSyDDMVo4pbfVILkWe3hxQt0mI94bSt-9kZI`
+      `https://sheets.googleapis.com/v4/spreadsheets/${process.env.NEXT_PUBLIC_SPREADSHEET_ID}/values/${process.env.NEXT_PUBLIC_RANGE}?key=${process.env.NEXT_PUBLIC_SPREADSHEET_API_KEY}`
     );
-
-    //     const response = await fetch(
-    //   `https://sheets.googleapis.com/v4/spreadsheets/${process.env.NEXT_PUBLIC_SPREADSHEET_ID}/values/${process.env.NEXT_PUBLIC_RANGE}?key=${process.env.NEXT_PUBLIC_SPREADSHEET_API_KEY}`
-    // );
-
 
     if (!response.ok) throw new Error("Failed to fetch data");
 
