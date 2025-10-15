@@ -13,7 +13,7 @@ import { CheckoutSuccessModal } from "@/components/checkout-success-modal";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
-import { useUserAndOrderStorage } from "@/hook/useUserStorage";
+import { useUserAndOrderStorage } from "@/hook/useUserAndOrderStorage";
 import Link from "next/link";
 
 export default function CheckoutPage() {
