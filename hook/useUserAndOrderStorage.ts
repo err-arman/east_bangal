@@ -1,6 +1,6 @@
 "use client";
 
-fimport { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface UserInfo {
   firstName: string;
