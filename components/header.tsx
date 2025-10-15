@@ -7,6 +7,7 @@ export const NAV_LINKS = [
   { href: "#singleorigincoffe", label: "SINGLE ORIGIN COFFES" },
   { href: "#blends", label: "BLENDS" },
   { href: "#coffe-accesories", label: "COFFE ACCESORIES" },
+  { href: "order-history", label: "ORDERS HISTORY" },
   { href: "cart", label: "MY CART" },
 ];
 
