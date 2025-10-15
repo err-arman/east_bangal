@@ -12,6 +12,8 @@ interface ProductCardProps {
   price: number;
   image: string;
   subTitle?: string;
+  variant?: string;
+  color?: string;
 }
 
 export function ProductCard({
@@ -21,13 +23,15 @@ export function ProductCard({
   price,
   subTitle,
   image,
+  variant,
+  color,
 }: ProductCardProps) {
   const { addToCart, removeFromCart } = useCart();
   const [added, setAdded] = useState(false);
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!added) {
-      addToCart({ id, name, price, image });
+      addToCart({ id: Number(id), name, price, image, variant, color });
       setAdded(true);
     } else {
       // if you want "cancel/remove" behavior:

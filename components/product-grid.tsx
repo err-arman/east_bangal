@@ -60,6 +60,8 @@ export function ProductGrid() {
               slug={product.slug}
               price={product.price}
               image={product.image ? product.image : "/images/2.png"}
+              variant={product?.variants?.length ? product?.variants[0] : ""}
+              color={product?.colors?.length ? product?.colors[0] : ""}
             />
           ))
         )}
@@ -92,6 +94,8 @@ export function ProductGrid() {
               slug={product.slug}
               price={product.price}
               image={product.image ? product.image : "/images/2.png"}
+              variant={product?.variants?.length ? product?.variants[0] : ""}
+              color={product?.colors?.length ? product?.colors[0] : ""}
             />
           ))
         )}

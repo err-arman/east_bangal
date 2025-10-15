@@ -12,16 +12,17 @@ import { OrderSummary } from "@/components/order-summary";
 import { CheckoutSuccessModal } from "@/components/checkout-success-modal";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useUserAndOrderStorage } from "@/hook/useUserAndOrderStorage";
 import { Loader } from "lucide-react";
+import { useUserAndOrderStorage } from "@/hook/useUserStorage";
+import Link from "next/link";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const router = useRouter();
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const { userInfo, isLoaded, saveUserInfo, addOrder } = useUserAndOrderStorage();
+  const { userInfo, isLoaded, saveUserInfo, addOrder } =
+    useUserAndOrderStorage();
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -125,7 +126,7 @@ export default function CheckoutPage() {
         setShowSuccess(true);
         // Clear cart
         clearCart();
-        alert(`Order submitted successfully! Order ID: ${result.orderId}`);
+        // alert(`Order submitted successfully! Order ID: ${result.orderId}`);
       } else {
         setIsLoading(false);
         throw new Error(result.message || "Failed to save order");
@@ -133,7 +134,7 @@ export default function CheckoutPage() {
     } catch (error) {
       setIsLoading(false);
       console.error("Error submitting order:", error);
-      alert("There was an error submitting your order. Please try again.");
+      // alert("There was an error submitting your order. Please try again.");
     }
   };
 
