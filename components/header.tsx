@@ -12,8 +12,6 @@ export const NAV_LINKS = [
 ];
 
 export function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <nav className="w-full z-50">
       {/* Desktop Navbar */}
@@ -35,12 +33,12 @@ export function Header() {
       </div>
 
       {/* Mobile Navbar */}
-      <div className="flex md:hidden flex-wrap items-center justify-start gap-4 px-6  bg-transparent">
+      <div className="flex md:hidden flex-wrap items-center justify-start gap-2 px-2  bg-transparent">
         {NAV_LINKS.map((link, idx) => (
           <Link
             key={idx}
             href={link.href}
-            className={`uppercase font-bold tracking-wide text-[12px] px-1 rounded-sm transition-all duration-200
+            className={`uppercase font-bold tracking-wide text-[10px] px-1 rounded-sm transition-all duration-200
               ${
                 link.label === "MY CART"
                   ? "bg-[#1A00AB] text-white hover:bg-[#1A00AB]"

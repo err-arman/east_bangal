@@ -21,14 +21,15 @@ export function Hero() {
       </div>
 
       {/* Curved text + circular logo */}
-      <div className="relative z-10 flex flex-col items-end justify-center min-h-screen px-6">
-        <div className="absolute flex items-center justify-center">
-          <div className="relative w-72 h-72 md:w-72 md:h-72 lg:w-[470px] lg:h-[470px] mr-12 md:mr-20 lg:mr-[420px] mb-96 lg:mb-60">
-            <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/70 to-indigo-900/70 rounded-full border-indigo-500 shadow-2xl flex flex-col items-center justify-center">
+      {/* Curved text + circular logo */}
+      <div className="relative z-10 flex items-center justify-center w-full h-full lg:items-center lg:justify-end lg:pr-[420px]">
+        <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:relative lg:top-auto lg:translate-y-0 lg:mb-0">
+          <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-[470px] lg:h-[470px]">
+            <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/90 to-indigo-900/70 rounded-full border-indigo-500 shadow-2xl flex flex-col items-center justify-center">
               <img
                 src="/images/butterfly.png"
                 alt="Butterfly Logo"
-                className="w-32 h-28 lg:w-48 lg:h-44 object-contain"
+                className="w-24 h-20 sm:w-32 sm:h-28 md:w-36 md:h-32 lg:w-48 lg:h-44 object-contain"
               />
             </div>
 
