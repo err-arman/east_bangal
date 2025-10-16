@@ -14,8 +14,9 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  variant?: string; // Add this
-  color?: string; // Add this
+  type: string;
+  variant?: string;
+  color?: string;
 }
 
 interface CartContextType {
@@ -49,10 +50,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (product: Omit<CartItem, "quantity">) => {
     setItems((currentItems) => {
       const existingItem = currentItems.find(
-        (item) =>
-          item.id === product.id &&
-          item.variant === product.variant &&
-          item.color === product.color
+        (item) => item.id === product.id
+        // &&
+        // item.variant === product.variant &&
+        // item.color === product.color &&
+        // item.type === product.type
       );
       if (existingItem) {
         return currentItems.map((item) =>

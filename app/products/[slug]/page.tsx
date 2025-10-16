@@ -15,7 +15,8 @@ interface ProductPageProps {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
-  const { getProductBySlug, getRecommendedProducts, loading, error } = useProducts();
+  const { getProductBySlug, getRecommendedProducts, loading, error } =
+    useProducts();
 
   if (loading) {
     return (
@@ -48,7 +49,10 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Image Gallery */}
           <div>
-            <ImageGallery images={product.images ? product.images : []} productName={product.name} />
+            <ImageGallery
+              images={product.images ? product.images : []}
+              productName={product.name}
+            />
           </div>
           {/* Product Info */}
           <div>
@@ -69,6 +73,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               id={Number(product.id)}
               name={product.name}
               slug={product.slug}
+              type="Whole"
               subTitle={product.subTitle}
               price={product.price}
               image={product.image}

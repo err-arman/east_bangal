@@ -1,17 +1,14 @@
 "use client";
-
 import { useState, useEffect } from 'react';
 
 export interface UserInfo {
   firstName: string;
-  lastName: string;
   email: string;
   phone: string;
-  address: string;
+  region: string;
   city: string;
-  state: string;
-  zip: string;
-  country: string;
+  address: string;
+  note?: string; // Optional field
 }
 
 export interface OrderHistory {
@@ -32,11 +29,11 @@ export const useUserAndOrderStorage = () => {
       try {
         const savedUserInfo = localStorage.getItem('userInfo');
         const savedOrders = localStorage.getItem('orderHistory');
-
+        
         if (savedUserInfo) {
           setUserInfo(JSON.parse(savedUserInfo));
         }
-
+        
         if (savedOrders) {
           setOrderHistory(JSON.parse(savedOrders));
         }

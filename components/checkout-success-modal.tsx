@@ -31,7 +31,7 @@ export function CheckoutSuccessModal({ open, onOpenChange }: CheckoutSuccessModa
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 mt-4">
-          <Button onClick={handleContinueShopping} size="lg" className="w-full">
+          <Button onClick={handleContinueShopping} size="icon-lg" className="w-full">
             Continue Shopping
           </Button>
         </div>

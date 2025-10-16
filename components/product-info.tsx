@@ -17,18 +17,33 @@ interface ProductInfoProps {
   product: IProduct;
 }
 
+const GRIND_TYPES = [
+  "Espresso",
+  "Moka pot",
+  "Pour over/filter machine",
+  "French Press",
+];
+
 export function ProductInfo({ product }: ProductInfoProps) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [selectedType, setSelectedType] = useState<"Whole" | "Ground" | null>(
+    null
+  );
   const [selectedVariant, setSelectedVariant] = useState(
     product.variants?.[0] || "None"
   );
+  const [selectedGrind, setSelectedGrind] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState(
     product.colors?.[0] || "None"
   );
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Determine if form is valid
+  const isFormValid =
+    selectedType && (selectedType === "Whole" || selectedGrind);
 
   const decreaseQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1);
@@ -39,13 +54,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
   };
 
   const handleAddToCart = async () => {
+    if (!isFormValid) return;
+
     setIsLoading(true);
 
     try {
-      // Simulate a small delay for better UX (optional)
       await new Promise((resolve) => setTimeout(resolve, 500));
-      console.log('selectedVarient', selectedVariant)
-      console.log('selected color', selectedColor)
+
       for (let i = 0; i < quantity; i++) {
         addToCart({
           id: Number(product.id),
@@ -53,11 +68,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
           price: product.price,
           image: product.image,
           variant: selectedVariant !== "None" ? selectedVariant : "",
+          type: selectedType === "Ground" ? selectedGrind || "" : "Whole",
           color: selectedColor !== "None" ? selectedColor : "",
         });
       }
 
-      // Show success modal
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -67,6 +82,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
   };
 
   const handleBuyNow = async () => {
+    if (!isFormValid) return;
+
     setIsLoading(true);
 
     try {
@@ -79,6 +96,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           price: product.price,
           image: product.image,
           variant: selectedVariant !== "None" ? selectedVariant : undefined,
+          type: selectedType === "Ground" ? selectedGrind || "" : "",
           color: selectedColor !== "None" ? selectedColor : undefined,
         });
       }
@@ -92,7 +110,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const handleContinueShopping = () => {
     setShowSuccessModal(false);
-    setQuantity(1); // Reset quantity
+    setQuantity(1);
   };
 
   const handleGoToCart = () => {
@@ -109,7 +127,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             {product.name}
           </h1>
           <p className="text-3xl font-semibold text-foreground">
-            ${product.price.toFixed(2)}
+            {product.price.toFixed(2)}
           </p>
         </div>
 
@@ -118,7 +136,58 @@ export function ProductInfo({ product }: ProductInfoProps) {
           {product.description}
         </p>
 
-        {/* Variant Selector */}
+        {/* Whole or Ground Selector */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Type <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-2">
+            <Button
+              variant={selectedType === "Whole" ? "default" : "outline"}
+              onClick={() => {
+                setSelectedType("Whole");
+                setSelectedGrind(null);
+              }}
+              // className="flex-1"
+              className="min-w-[80px]"
+              disabled={isLoading}
+            >
+              Whole
+            </Button>
+            <Button
+              variant={selectedType === "Ground" ? "default" : "outline"}
+              onClick={() => setSelectedType("Ground")}
+              // className="flex-1"
+              disabled={isLoading}
+              className="min-w-[80px]"
+            >
+              Ground
+            </Button>
+          </div>
+        </div>
+
+        {/* Grind Type Selector - Only show if Ground is selected */}
+        {selectedType === "Ground" && (
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {/* <span className="text-red-500">*</span> */}
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {GRIND_TYPES.map((grind) => (
+                <Button
+                  key={grind}
+                  variant={selectedGrind === grind ? "default" : "outline"}
+                  onClick={() => setSelectedGrind(grind)}
+                  disabled={isLoading}
+                >
+                  {grind}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Product Variants - if any */}
         {product.variants && product.variants.length > 0 && (
           <div>
             <label className="block text-sm font-medium mb-2">Variant</label>
@@ -188,9 +257,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <Button
             onClick={handleAddToCart}
-            className="flex-1 gap-2 cursor-pointer"
+            className="flex-1 p-1 gap-2 cursor-pointer"
             size="lg"
-            disabled={isLoading}
+            disabled={!isFormValid || isLoading}
           >
             {isLoading ? (
               <>
@@ -207,9 +276,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <Button
             onClick={handleBuyNow}
             variant="secondary"
-            className="flex-1 cursor-pointer"
+            className="flex-1 p-1 cursor-pointer"
             size="lg"
-            disabled={isLoading}
+            disabled={!isFormValid || isLoading}
           >
             {isLoading ? "Processing..." : "Buy Now"}
           </Button>
@@ -227,14 +296,15 @@ export function ProductInfo({ product }: ProductInfoProps) {
               Added to Cart!
             </DialogTitle>
             <DialogDescription className="text-center">
-              {quantity} {quantity === 1 ? "item" : "items"} of {product.name}{" "}
-              {selectedVariant !== "None" && ` (${selectedVariant})`}
+              {quantity} {quantity === 1 ? "item" : "items"} of {product.name} (
+              {selectedType}
+              {selectedType === "Ground" && ` - ${selectedGrind}`})
               {selectedColor !== "None" && ` - ${selectedColor}`}
-              {quantity === 1 ? "has" : "have"} been added to your cart.
+              {quantity === 1 ? " has" : " have"} been added to your cart.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 mt-4">
-            <Button onClick={handleGoToCart} size="lg">
+            <Button onClick={handleGoToCart} size="lg" className="">
               Go to Cart
             </Button>
             <Button

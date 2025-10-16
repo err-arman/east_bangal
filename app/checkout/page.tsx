@@ -1,7 +1,5 @@
 "use client";
-
 import type React from "react";
-
 import { useCart } from "@/lib/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 import { useUserAndOrderStorage } from "@/hook/useUserAndOrderStorage";
 import Link from "next/link";
+import { regions } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
@@ -23,39 +22,56 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const { userInfo, isLoaded, saveUserInfo, addOrder } =
     useUserAndOrderStorage();
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     firstName: "",
-    lastName: "",
     email: "",
     phone: "",
-    address: "",
+    region: "",
     city: "",
-    state: "",
-    zip: "",
-    country: "",
+    address: "",
+    note: "",
   });
+
+  const handleRegionChange = (e: any) => {
+    const region = e.target.value;
+    setSelectedRegion(region);
+    setSelectedCity(""); // Reset city when region changes
+    setFormData((prev) => ({ ...prev, region, city: "" }));
+  };
+
+  const handleCityChange = (e: any) => {
+    const city = e.target.value;
+    setSelectedCity(city);
+    setFormData((prev) => ({ ...prev, city }));
+  };
 
   // Load saved user info when available
   useEffect(() => {
     if (userInfo) {
       setFormData({
         firstName: userInfo.firstName,
-        lastName: userInfo.lastName,
         email: userInfo.email,
         phone: userInfo.phone,
-        address: userInfo.address,
-        city: userInfo.city,
-        state: userInfo.state,
-        zip: userInfo.zip,
-        country: userInfo.country,
+        region: userInfo.region || "",
+        city: userInfo.city || "",
+        address: userInfo.address || "",
+        note: userInfo.note || "",
       });
+
+      // Set the region and city states for dropdowns
+      if (userInfo.region) {
+        setSelectedRegion(userInfo.region);
+      }
+      if (userInfo.city) {
+        setSelectedCity(userInfo.city);
+      }
     }
   }, [userInfo, isLoaded]);
 
   const deliveryCost = subtotal > 0 ? 35.0 : 0;
-  // const discount = subtotal > 500 ? subtotal * 0.1 : 0
   const discount = 0;
   const total = subtotal + deliveryCost - discount;
 
@@ -63,18 +79,17 @@ export default function CheckoutPage() {
     setIsLoading(true);
     try {
       e.preventDefault();
+
       // Get form data
       const form = e.target as HTMLFormElement;
       const userData = {
         firstName: form.firstName.value,
-        lastName: form.lastName.value,
         email: form.email.value,
         phone: form.phone.value,
-        address: form.address.value,
+        region: form.region.value,
         city: form.city.value,
-        state: form.state.value,
-        zip: form.zip.value,
-        country: form.country.value,
+        address: form.address.value,
+        note: form.note.value || "", // Optional field
       };
 
       // Save user info for future orders
@@ -91,7 +106,6 @@ export default function CheckoutPage() {
           total,
         },
       };
-
       const response = await fetch(
         process.env.NEXT_PUBLIC_SPREADSHEET_WEBAPP_URL || "",
         {
@@ -110,7 +124,6 @@ export default function CheckoutPage() {
       }
 
       const result = await response.json();
-      console.log("Order saved:", result);
       if (result?.success) {
         addOrder({
           orderId: result.orderId,
@@ -126,7 +139,6 @@ export default function CheckoutPage() {
         setShowSuccess(true);
         // Clear cart
         clearCart();
-        // alert(`Order submitted successfully! Order ID: ${result.orderId}`);
       } else {
         setIsLoading(false);
         throw new Error(result.message || "Failed to save order");
@@ -134,7 +146,6 @@ export default function CheckoutPage() {
     } catch (error) {
       setIsLoading(false);
       console.error("Error submitting order:", error);
-      // alert("There was an error submitting your order. Please try again.");
     }
   };
 
@@ -160,7 +171,6 @@ export default function CheckoutPage() {
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 md:py-16">
         <h1 className="text-3xl md:text-4xl font-bold mb-8">Checkout</h1>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
@@ -169,49 +179,39 @@ export default function CheckoutPage() {
               <Card className="p-6">
                 <h2 className="text-xl font-bold mb-6">Contact Information</h2>
                 <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Name *</Label>
+                    <Input
+                      id="firstName"
+                      name="firstName"
+                      required
+                      placeholder="Enter your name"
+                      defaultValue={formData.firstName}
+                    />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name *</Label>
+                      <Label htmlFor="email">Email *</Label>
                       <Input
-                        id="firstName"
-                        name="firstName"
+                        id="email"
+                        name="email"
+                        type="email"
                         required
-                        placeholder="John"
-                        defaultValue={formData.firstName}
+                        placeholder="john@example.com"
+                        defaultValue={formData.email}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Label htmlFor="phone">Phone Number *</Label>
                       <Input
-                        id="lastName"
-                        name="lastName"
+                        id="phone"
+                        name="phone"
+                        type="tel"
                         required
-                        placeholder="Doe"
-                        defaultValue={formData.lastName}
+                        placeholder="+880 1XXX-XXXXXX"
+                        defaultValue={formData.phone}
                       />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="john@example.com"
-                      defaultValue={formData.email}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      required
-                      placeholder="+1 (555) 000-0000"
-                      defaultValue={formData.phone}
-                    />
                   </div>
                 </div>
               </Card>
@@ -220,64 +220,77 @@ export default function CheckoutPage() {
               <Card className="p-6">
                 <h2 className="text-xl font-bold mb-6">Shipping Address</h2>
                 <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="region">Region/Division *</Label>
+                      <select
+                        id="region"
+                        name="region"
+                        required
+                        value={selectedRegion}
+                        onChange={handleRegionChange}
+                        className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
+                        <option value="">Select Region</option>
+                        {Object.keys(regions).map((region) => (
+                          <option key={region} value={region}>
+                            {region}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City/District *</Label>
+                      <select
+                        id="city"
+                        name="city"
+                        required
+                        value={selectedCity}
+                        onChange={handleCityChange}
+                        disabled={!selectedRegion}
+                        className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring disabled:bg-muted disabled:cursor-not-allowed"
+                      >
+                        <option value="">
+                          {selectedRegion
+                            ? "Select City"
+                            : "Please select a region first"}
+                        </option>
+                        {selectedRegion &&
+                          regions[selectedRegion as keyof typeof regions].map(
+                            (city: string) => (
+                              <option key={city} value={city}>
+                                {city}
+                              </option>
+                            )
+                          )}
+                      </select>
+                    </div>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="address">Street Address *</Label>
                     <Input
                       id="address"
                       name="address"
                       required
-                      placeholder="123 Main Street"
+                      placeholder="House/Flat no, Road no, Area"
+                      className="w-full"
                       defaultValue={formData.address}
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="city">City *</Label>
-                      <Input
-                        id="city"
-                        name="city"
-                        required
-                        placeholder="New York"
-                        defaultValue={formData.city}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="state">State/Province *</Label>
-                      <Input
-                        id="state"
-                        name="state"
-                        required
-                        placeholder="NY"
-                        defaultValue={formData.state}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="zip">ZIP/Postal Code *</Label>
-                      <Input
-                        id="zip"
-                        name="zip"
-                        required
-                        placeholder="10001"
-                        defaultValue={formData.zip}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="country">Country *</Label>
-                      <Input
-                        id="country"
-                        name="country"
-                        required
-                        placeholder="United States"
-                        defaultValue={formData.country}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="note">Delivery Note (Optional)</Label>
+                    <Input
+                      id="note"
+                      name="note"
+                      placeholder="Add any special instructions for delivery"
+                      className="w-full"
+                      defaultValue={formData.note}
+                    />
                   </div>
                 </div>
               </Card>
 
-              {/* Payment Method - unchanged */}
+              {/* Payment Method */}
               <Card className="p-6">
                 <h2 className="text-xl font-bold mb-6">Payment Method</h2>
                 <RadioGroup
@@ -313,7 +326,11 @@ export default function CheckoutPage() {
                   disabled={isLoading}
                   className="w-full"
                 >
-                  {isLoading ? <Loader /> : "Place Order"}
+                  {isLoading ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Place Order"
+                  )}
                 </Button>
               </div>
             </form>
@@ -340,11 +357,15 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">
                           {item.name}
+                        </p> 
+                         <p className="font-medium text-sm truncate">
+                          {item.type}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Qty: {item.quantity} × {item.price.toFixed(2)}
                         </p>
                       </div>
+                        
                       <div className="font-medium text-sm">
                         {(item.price * item.quantity).toFixed(2)}
                       </div>
@@ -366,7 +387,7 @@ export default function CheckoutPage() {
                 <Button
                   disabled={isLoading}
                   type="submit"
-                  size="lg"
+                  size="icon-lg"
                   className="w-full cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
@@ -376,7 +397,11 @@ export default function CheckoutPage() {
                     }
                   }}
                 >
-                  {isLoading ? <Loader /> : "Place Order"}
+                  {isLoading ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Place Order"
+                  )}
                 </Button>
               </div>
             </div>

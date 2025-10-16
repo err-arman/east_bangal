@@ -56,6 +56,7 @@ export function ProductGrid() {
               key={product.id}
               subTitle={product.subTitle}
               id={Number(product.id)}
+              type="Whole"
               name={product.name}
               slug={product.slug}
               price={product.price}
@@ -89,6 +90,7 @@ export function ProductGrid() {
             <ProductCard
               key={product.id}
               id={Number(product.id)}
+              type="Whole"
               name={product.name}
               subTitle={product.subTitle}
               slug={product.slug}
