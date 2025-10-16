@@ -1,6 +1,5 @@
 "use client";
 
-import { Header } from "./header";
 
 export function Hero() {
   return (
@@ -15,12 +14,7 @@ export function Hero() {
       {/* Overlay for slight dimming */}
       <div className="absolute inset-0 bg-black/20" />
 
-      {/* Header */}
-      <div className="relative z-50">
-        <Header />
-      </div>
 
-      {/* Curved text + circular logo */}
       {/* Curved text + circular logo */}
       <div className="relative z-10 flex items-center justify-center w-full h-full lg:items-center lg:justify-end lg:pr-[420px]">
         <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:relative lg:top-auto lg:translate-y-0 lg:mb-0">

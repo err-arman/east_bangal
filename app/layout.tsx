@@ -4,9 +4,9 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { CartProvider } from "@/lib/cart-context"
-import { Header } from "@/components/header"
 import { Suspense } from "react"
 import { Smooch_Sans } from "next/font/google"
+import { Header } from "@/components/header"
 
 export const metadata: Metadata = {
   title: "The Coffee Store",
@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${smoochSans.className}`}>
         <Suspense fallback={null}>
           <CartProvider>
-            {/* <Header /> */}
+            <Header />
             {children}
           </CartProvider>
         </Suspense>
